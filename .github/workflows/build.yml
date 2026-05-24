@@ -1,0 +1,109 @@
+# Edge OS — CI Pipeline
+#
+# Runs on every push and pull request to main.
+# Validates code quality, shell script linting, and build system integrity.
+#
+# Full kernel/rootfs builds are skipped in CI (resource-intensive).
+# They should be run locally or on self-hosted runners.
+
+name: Edge OS CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  ZIG_VERSION: 0.14.0
+
+jobs:
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+
+      - name: ShellCheck — build scripts
+        run: shellcheck scripts/*.sh
+
+      - name: ShellCheck — system scripts
+        run: shellcheck system/btrfs/*.sh system/apt-hooks/btrfs-snapshot
+
+      - name: ShellCheck — installer scripts
+        run: shellcheck installer/calamares/scripts/*.sh
+
+      - name: Verify .shellcheckrc compliance
+        run: |
+          errors=0
+          for script in scripts/*.sh system/btrfs/*.sh system/apt-hooks/btrfs-snapshot installer/calamares/scripts/*.sh; do
+            if ! shellcheck -Calways "$script" 2>/dev/null; then
+              errors=$((errors + 1))
+            fi
+          done
+          echo "ShellCheck violations: $errors"
+          [ "$errors" -eq 0 ] || exit 1
+
+  build-verify:
+    name: Build System Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Zig
+        run: |
+          curl -sSLO "https://ziglang.org/download/${ZIG_VERSION}/zig-linux-x86_64-${ZIG_VERSION}.tar.xz"
+          tar -xf "zig-linux-x86_64-${ZIG_VERSION}.tar.xz"
+          echo "$PWD/zig-linux-x86_64-${ZIG_VERSION}" >> "$GITHUB_PATH"
+
+      - name: Verify build.zig parses
+        run: zig build --help 2>&1 | head -20
+
+      - name: Verify kernel config syntax
+        run: |
+          if [ -f kernel/config ]; then
+            echo "kernel/config found ($(wc -l < kernel/config) lines)"
+            grep -c '^CONFIG_' kernel/config
+          fi
+
+  calamares-verify:
+    name: Calamares Config Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate YAML configs
+        run: |
+          errors=0
+          # Check for balanced quotes and basic YAML structure
+          for conf in installer/calamares/modules/*.conf installer/calamares/settings.conf; do
+            # Skip comment-only lines, check for key: value patterns
+            if ! grep -vE '^\s*(#|$)' "$conf" | grep -qE '^\s*\w+:' ; then
+              echo "⚠️  $conf appears to have no YAML key-value pairs"
+            fi
+          done
+          # Verify all referenced module configs exist
+          for ref in $(grep 'config:' installer/calamares/settings.conf | awk '{print $2}'); do
+            if [ ! -f "installer/calamares/modules/$ref" ]; then
+              echo "❌ Missing module config: $ref"
+              errors=$((errors + 1))
+            fi
+          done
+          # Verify Calamares scripts referenced in btrfs-layout.conf exist
+          if [ -f installer/calamares/modules/btrfs-layout.conf ]; then
+            for script_ref in $(grep -i 'script' installer/calamares/modules/btrfs-layout.conf | grep -oP '"\K[^"]+' 2>/dev/null || true); do
+              script_path="installer/calamares/scripts/$script_ref"
+              if [ -n "$script_ref" ] && [ ! -f "$script_path" ]; then
+                echo "❌ Missing btrfs layout script: $script_ref"
+                errors=$((errors + 1))
+              fi
+            done
+          fi
+          if [ "$errors" -gt 0 ]; then
+            echo "❌ $errors Calamares config errors found"
+            exit 1
+          fi
+          echo "✅ All Calamares configs valid"

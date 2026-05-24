@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Hyprland
+Comment=Hyprland Wayland compositor
+Exec=Hyprland
+Type=Application
+DesktopNames=Hyprland
+Keywords=wm;wayland;compositor;
+# Compatibility with display managers (SDDM, GDM, LightDM)
+X-LightDM-desktop=true
+X-KDE-Wayland-Legacy=true

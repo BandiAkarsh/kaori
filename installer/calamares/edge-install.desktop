@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Install Edge OS
+Comment=Install Edge OS to your computer
+Exec=pkexec /usr/bin/calamares
+Icon=drive-harddisk
+Terminal=false
+Categories=System;Installer;
+StartupNotify=true
+NoDisplay=false
+X-KDE-SubstituteUID=false

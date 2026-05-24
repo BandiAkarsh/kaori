@@ -1,0 +1,45 @@
+# Edge OS — Calamares Branding
+#
+# Product identity and visual presentation for the Calamares installer.
+# This file follows the Calamares branding.desc schema.
+
+componentName: edge
+
+welcomeStyleCalamares:   true
+welcomeExpandingLogo:    true
+
+windowExpanding:   normal
+windowSize:        1024px, 600px
+windowPlacement:  center
+
+sidebar:   widget
+navigation: widget
+
+strings:
+    productName:         Edge OS
+    shortProductName:    Edge
+    version:             0.1.0
+    shortVersion:        0.1.0
+    versionedName:       Edge OS 0.1.0
+    shortVersionedName:  Edge OS 0.1.0
+    bootloaderEntryName: Edge OS
+    productUrl:          https://edge-os.org/
+    supportUrl:          https://edge-os.org/docs/
+    knownIssuesUrl:      https://edge-os.org/issues/
+    releaseNotesUrl:     https://edge-os.org/releases/
+    donateUrl:           https://edge-os.org/donate/
+
+images:
+    productLogo:         "edge-logo.svg"
+    productIcon:         "edge-logo.svg"
+    productWelcome:      "edge-logo.svg"
+
+slideshow:               "show.qml"
+slideshowAPI:            2
+
+style:
+   SidebarBackground:    "#1a1a2e"
+   SidebarText:          "#e0e0e0"
+   SidebarCurrent:       "#00d4aa"
+   SidebarWidth:         220
+   SidebarExtension:     "#16213e"

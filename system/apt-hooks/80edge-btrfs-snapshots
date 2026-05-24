@@ -1,0 +1,8 @@
+# Edge OS — Automatic Btrfs snapshots on APT operations
+#
+# Creates pre/post snapshot pairs around every dpkg run.
+# The hook script handles both snapper and raw btrfs snapshots.
+# Deployed to /etc/apt/apt.conf.d/80edge-btrfs-snapshots
+
+DPkg::Pre-Invoke  { "/usr/lib/edge/btrfs-apt-hook pre"; };
+DPkg::Post-Invoke { "/usr/lib/edge/btrfs-apt-hook post"; };

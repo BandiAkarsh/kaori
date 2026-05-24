@@ -1,0 +1,24 @@
+! Edge OS Terminal Theme (Xresources / UXTerm / xterm)
+! Origin: Your Lie in April + Garden of Words
+
+*.foreground:   #e8dcd0
+*.background:   #0a141e
+*.cursorColor:  #ffaec9
+
+*.color0:  #0a141e
+*.color1:  #d46a8a
+*.color2:  #6b8f71
+*.color3:  #e8c87a
+*.color4:  #7ab8c9
+*.color5:  #c97a9f
+*.color6:  #5fadad
+*.color7:  #d4c4b0
+
+*.color8:  #1a2a3a
+*.color9:  #f58ba7
+*.color10: #8ab892
+*.color11: #f0dca0
+*.color12: #9ad0df
+*.color13: #e09aba
+*.color14: #80c4c4
+*.color15: #f0e4d0

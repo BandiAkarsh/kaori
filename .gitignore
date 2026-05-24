@@ -1,0 +1,51 @@
+# ─── Build artifacts ───
+build/
+.iso/
+*.iso
+*.img
+*.cpio
+*.cpio.xz
+*.tar.gz
+*.tar.xz
+*.squashfs
+zig-out/
+.zig-cache/
+
+# ─── Dependencies ───
+.cache/
+.cargo/
+
+# ─── IDE ───
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── System ───
+*~
+.DS_Store
+.directory
+
+# ─── Session/temp ───
+.tmp/
+
+# ─── Graph knowledge graph ───
+graphify-out/
+
+# ─── Backup files ───
+*.bak
+*.old
+*.orig
+
+# ─── ShellCheck cache ───
+.shellcheck-cache/
+
+# ─── Large theme assets (download at build time) ───
+assets/hyprland-theme/wallpapers/
+
+# ─── Generated wallpaper caches ───
+assets/hyprland-theme/config/hypr/wallpaper_effects/.wallpaper_current
+assets/hyprland-theme/config/hypr/wallpaper_effects/.wallpaper_modified
+
+# ─── Quickshell large assets ───
+assets/hyprland-theme/config/quickshell/overview/assets/image.png

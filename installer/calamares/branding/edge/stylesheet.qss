@@ -1,0 +1,129 @@
+/* Edge OS — Calamares Stylesheet
+ *
+ * Dark theme with cyan accents matching Edge OS branding.
+ */
+
+#mainApp {
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+}
+
+#sidebarApp {
+    background-color: #16213e;
+    border-right: 1px solid #0f3460;
+}
+
+#logoApp {
+    margin: 16px;
+}
+
+/* Welcome page */
+#welcomeWidget QLabel[heading="true"] {
+    color: #00d4aa;
+    font-size: 20px;
+}
+
+/* Progress bars */
+QProgressBar {
+    background-color: #0f3460;
+    border: 1px solid #1a1a2e;
+    border-radius: 4px;
+    height: 8px;
+    text-align: center;
+}
+
+QProgressBar::chunk {
+    background-color: #00d4aa;
+    border-radius: 4px;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #0f3460;
+    color: #e0e0e0;
+    border: 1px solid #1a5373;
+    border-radius: 4px;
+    padding: 6px 16px;
+    min-height: 24px;
+}
+
+QPushButton:hover {
+    background-color: #1a5373;
+    border-color: #00d4aa;
+}
+
+QPushButton:pressed {
+    background-color: #00d4aa;
+    color: #1a1a2e;
+}
+
+/* Disable buttons */
+QPushButton:disabled {
+    background-color: #2a2a3e;
+    color: #606060;
+    border-color: #3a3a4e;
+}
+
+/* Comboboxes / Spinboxes */
+QComboBox, QSpinBox {
+    background-color: #0f3460;
+    color: #e0e0e0;
+    border: 1px solid #1a5373;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+/* Lists */
+QListWidget, QTreeWidget {
+    background-color: #0f3460;
+    color: #e0e0e0;
+    border: 1px solid #1a5373;
+    border-radius: 4px;
+    alternate-background-color: #122a4a;
+}
+
+QListWidget::item:selected, QTreeWidget::item:selected {
+    background-color: #00d4aa;
+    color: #1a1a2e;
+}
+
+/* Labels */
+QLabel {
+    color: #e0e0e0;
+}
+
+QLabel[link="true"] {
+    color: #00d4aa;
+}
+
+/* Group boxes */
+QGroupBox {
+    border: 1px solid #1a5373;
+    border-radius: 4px;
+    margin-top: 12px;
+    padding-top: 12px;
+    color: #00d4aa;
+}
+
+/* Checkboxes and Radio buttons */
+QCheckBox, QRadioButton {
+    color: #e0e0e0;
+    spacing: 8px;
+}
+
+/* Partitions table */
+QTableView {
+    background-color: #0f3460;
+    color: #e0e0e0;
+    border: 1px solid #1a5373;
+    gridline-color: #1a5373;
+    selection-background-color: #00d4aa;
+    selection-color: #1a1a2e;
+}
+
+QHeaderView::section {
+    background-color: #16213e;
+    color: #00d4aa;
+    border: 1px solid #1a5373;
+    padding: 4px;
+}

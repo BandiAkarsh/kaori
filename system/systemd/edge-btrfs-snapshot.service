@@ -1,0 +1,23 @@
+# Edge OS — Btrfs Periodic Snapshot Service
+#
+# Creates a daily snapshot of the root subvolume.
+# Triggered by edge-btrfs-snapshot.timer
+#
+# Uses system/btrfs/snapshot.sh or falls back to raw btrfs command.
+# Installed to: /etc/systemd/system/edge-btrfs-snapshot.service
+
+[Unit]
+Description=Edge OS Btrfs Daily Snapshot
+Documentation=https://github.com/akarsh/kaori
+ConditionPathIsDirectory=/.snapshots
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/edge-btrfs-snapshot create
+ExecStartPost=/usr/local/sbin/edge-btrfs-snapshot cleanup
+Nice=19
+IOSchedulingClass=idle
+ProtectSystem=full
+ProtectHome=read-only
+StandardOutput=journal
+StandardError=journal

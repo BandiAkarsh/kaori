@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+# Edge OS — APT Btrfs Snapshot Hook
+#
+# Creates automatic Btrfs snapshots before and after APT operations.
+# Deployed to /usr/lib/edge/btrfs-apt-hook via rootfs build.
+# Triggered by APT via DPkg::Pre-Invoke / Post-Invoke.
+#
+# Pre-Invoke:  Creates a "pre" snapshot via snapper
+# Post-Invoke: Creates the matching "post" snapshot
+# On-failure:  Post-Invoke still runs if dpkg fails (APT runs it regardless)
+
+set -Eeuo pipefail
+
+COUNTER_FILE="/var/lib/edge/btrfs-snapshot-counter"
+SNAPPER_CONFIG="edge_root"
+LOCK_FILE="/run/lock/edge-btrfs-apt-hook.lock"
+
+mkdir -p /var/lib/edge /run/lock
+
+# ─── Acquire lock (non-blocking) ───
+exec 9>"$LOCK_FILE"
+if ! flock -n 9; then
+    # Another APT hook is running — skip to avoid nesting
+    exit 0
+fi
+
+# ─── Determine if root is Btrfs ───
+ROOT_FS=$(findmnt -n -o FSTYPE /)
+if [ "$ROOT_FS" != "btrfs" ]; then
+    exit 0
+fi
+
+# ─── Read counter ───
+PAIR_NUMBER=0
+if [ -f "$COUNTER_FILE" ]; then
+    PAIR_NUMBER=$(cat "$COUNTER_FILE")
+fi
+
+case "${1:-}" in
+    pre)
+        PAIR_NUMBER=$((PAIR_NUMBER + 1))
+        echo "$PAIR_NUMBER" > "$COUNTER_FILE"
+
+        if command -v snapper &>/dev/null; then
+            snapper -c "$SNAPPER_CONFIG" create -d \
+                "apt-pre-$(date +%Y%m%d-%H%M%S)" --type pre
+            echo "[edge-btrfs] ✅ PRE snapshot #${PAIR_NUMBER} created" >&2
+        else
+            echo "[edge-btrfs] ⚠ snapper not available — skipping PRE snapshot" >&2
+        fi
+        ;;
+    post)
+        if [ "$PAIR_NUMBER" -gt 0 ]; then
+            if command -v snapper &>/dev/null; then
+                # Find the most recent pre snapshot for this pair
+                snapper -c "$SNAPPER_CONFIG" create -d \
+                    "apt-post-$(date +%Y%m%d-%H%M%S)" \
+                    --type post --pre-number "$PAIR_NUMBER" 2>/dev/null || {
+                    # If pairing fails, create standalone
+                    snapper -c "$SNAPPER_CONFIG" create -d \
+                        "apt-post-$(date +%Y%m%d-%H%M%S)"
+                }
+                echo "[edge-btrfs] ✅ POST snapshot for pair #${PAIR_NUMBER} created" >&2
+            fi
+        fi
+
+        # Cleanup old snapshots after successful operation
+        if command -v snapper &>/dev/null; then
+            snapper -c "$SNAPPER_CONFIG" cleanup 2>/dev/null || true
+        fi
+        ;;
+esac
+
+flock -u 9

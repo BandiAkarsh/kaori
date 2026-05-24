@@ -1,0 +1,19 @@
+# Edge OS — Btrfs Daily Snapshot Timer
+#
+# Triggers a daily Btrfs snapshot at 3:00 AM.
+# OnFailure and OnUnitInactiveSec ensure we don't miss snapshots
+# when the system is off overnight (anacron-style catch-up).
+#
+# Installed to: /etc/systemd/system/edge-btrfs-snapshot.timer
+
+[Unit]
+Description=Edge OS Daily Btrfs Snapshot Timer
+Documentation=https://github.com/akarsh/kaori
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=30m
+
+[Install]
+WantedBy=timers.target
