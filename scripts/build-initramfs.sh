@@ -244,5 +244,5 @@ cd "$ROOTFS_DIR"
 find . -print0 | bsdcpio -0o -H newc | xz -9 --check=crc32 > "$BUILD_DIR/initramfs-edge.cpio.xz"
 cd "$OLDPWD"
 
-SIZE=$(ls -lh "$BUILD_DIR/initramfs-edge.cpio.xz" | awk '{print $5}')
+SIZE=$(du -sh "$BUILD_DIR/initramfs-edge.cpio.xz" | cut -f1)
 echo -e "${GREEN}✅ Initramfs built: build/initramfs-edge.cpio.xz (${SIZE})${NC}"

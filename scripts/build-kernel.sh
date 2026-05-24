@@ -80,7 +80,7 @@ make -j"$NUM_JOBS" LLVM=1 LLVM_IAS=1 bzImage
 
 # ── Copy output ──
 cp "$SRC_DIR/arch/x86/boot/bzImage" "$BUILD_DIR/vmlinuz-edge"
-log "Kernel built: build/vmlinuz-edge ($(ls -lh "$BUILD_DIR/vmlinuz-edge" | awk '{print $5}'))"
+log "Kernel built: build/vmlinuz-edge ($(du -sh "$BUILD_DIR/vmlinuz-edge" | cut -f1))"
 
 info "Next steps:"
 echo "  zig build initramfs    # Build initramfs"

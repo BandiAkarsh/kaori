@@ -283,7 +283,13 @@ echo -e "${GREEN}  ✅ Cleanup done${NC}"
 
 # ─── Extract Debian kernel for ISO ───
 echo -e "\n${GREEN}[Extra] Extracting Debian kernel for ISO...${NC}"
-DEBIAN_KERNEL=$(ls "$ROOTFS_DIR/boot/vmlinuz-"* 2>/dev/null | head -1 || true)
+DEBIAN_KERNEL=""
+for f in "$ROOTFS_DIR/boot/vmlinuz-"*; do
+    if [ -f "$f" ]; then
+        DEBIAN_KERNEL="$f"
+        break
+    fi
+done
 if [ -n "$DEBIAN_KERNEL" ]; then
     cp "$DEBIAN_KERNEL" build/vmlinuz-edge
     echo -e "${GREEN}  ✅ Kernel extracted: $(basename "$DEBIAN_KERNEL") → build/vmlinuz-edge${NC}"
@@ -298,7 +304,7 @@ if [ "$BUILD_SQUASHFS" -eq 1 ]; then
         -comp zstd -Xcompression-level 15 \
         -b 1M -noappend
     echo -e "${GREEN}  ✅ Squashfs created: ${SQUASHFS_FILE}${NC}"
-    echo -e "${GREEN}     Size: $(ls -lh "$SQUASHFS_FILE" | awk '{print $5}')${NC}"
+    echo -e "${GREEN}     Size: $(du -sh "$SQUASHFS_FILE" | cut -f1)${NC}"
 else
     echo -e "\n${YELLOW}[Extra] Skipping squashfs (--no-squashfs). Run deploy-theme.sh first, then create squashfs.${NC}"
 fi

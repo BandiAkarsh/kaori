@@ -124,7 +124,9 @@ UTILS=(
 # Build all utilities in a single cargo invocation (shares dep compilation)
 cd "$UUTILS_DIR" || { echo "  ❌ Cannot enter $UUTILS_DIR" >&2; exit 1; }
 echo "  Building ${#UTILS[@]} utilities in parallel (single cargo invocation)..."
-if ! cargo build --release $(printf -- "-p %s " "${UTILS[@]}"); then
+CARGO_ARGS=()
+for u in "${UTILS[@]}"; do CARGO_ARGS+=("-p" "$u"); done
+if ! cargo build --release "${CARGO_ARGS[@]}"; then
     echo "  ❌ Cargo build failed — check build logs above" >&2
     exit 1
 fi
@@ -145,10 +147,12 @@ for util in "${UTILS[@]}"; do
     if [ -f "$src" ]; then
         # Copy and strip debug symbols
         cp "$src" "$dst"
+        local size
+        size=$(du -sh "$dst" | cut -f1)
         if strip --strip-all "$dst" 2>/dev/null; then
-            echo "  ✅ $name ($(ls -lh "$dst" | awk '{print $5}'))"
+            echo "  ✅ $name ($size)"
         else
-            echo "  ✅ $name ($(ls -lh "$dst" | awk '{print $5}')) [not stripped]"
+            echo "  ✅ $name ($size) [not stripped]"
         fi
         chmod 755 "$dst"
         deployed=$((deployed + 1))

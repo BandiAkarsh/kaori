@@ -105,7 +105,7 @@ section_layout() {
     # Snapshot directory
     if [ -d /.snapshots ]; then
         local snap_count
-        snap_count=$(ls -1 /.snapshots/ 2>/dev/null | wc -l)
+        snap_count=$(find /.snapshots/ -mindepth 1 -maxdepth 1 2>/dev/null | wc -l)
         echo "  Snapshot directory: /.snapshots (${snap_count} entries)"
     fi
 }
@@ -363,7 +363,6 @@ case "$MODE" in
     --json)
         ensure_dir
         {
-            local btrfs_dev
             btrfs_dev=$(detect_btrfs_root || echo "none")
             echo "{\"device\": \"${btrfs_dev}\", \"date\": \"$(date -u -Iseconds)\", \"mode\": \"btrfs\"}"
         } > "$JSON_OUTPUT"

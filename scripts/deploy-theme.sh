@@ -193,7 +193,16 @@ if [ -d "assets/hyprland-theme/wallpapers" ]; then
 fi
 
 # Pick first wallpaper as default
-DEFAULT_WALL=$(ls "$ROOTFS/home/edge/Pictures/wallpapers/" 2>/dev/null | grep -iE '\.(png|jpg|jpeg)' | head -1)
+DEFAULT_WALL=""
+WALL_DIR="$ROOTFS/home/edge/Pictures/wallpapers"
+if [ -d "$WALL_DIR" ]; then
+    for f in "$WALL_DIR"/*.png "$WALL_DIR"/*.jpg "$WALL_DIR"/*.jpeg; do
+        if [ -f "$f" ]; then
+            DEFAULT_WALL=$(basename "$f")
+            break
+        fi
+    done
+fi
 if [ -n "$DEFAULT_WALL" ]; then
     # Add swww wallpaper set to Startup_Apps.conf
     cat >> "$ROOTFS/home/edge/.config/hypr/configs/Startup_Apps.conf" <<WALL

@@ -17,12 +17,7 @@
 
 set -Eeuo pipefail
 cd "$(dirname "$0")/.."
-
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-CYAN='\033[0;36m'
-NC='\033[0m'
+source scripts/lib/colors.sh
 
 BUILD_DIR="build"
 JSON_OUTPUT="$BUILD_DIR/benchmarks/boot.json"
@@ -222,7 +217,7 @@ section_initramfs() {
         if [ -f "$initramfs" ]; then
             local size
             local decompressed
-            size=$(ls -lh "$initramfs" 2>/dev/null | awk '{print $5}')
+            size=$(du -sh "$initramfs" 2>/dev/null | cut -f1)
             if command -v xz &>/dev/null; then
                 decompressed=$(xz -l "$initramfs" 2>/dev/null | tail -1 | awk '{print $3}' || echo "N/A")
                 echo ""

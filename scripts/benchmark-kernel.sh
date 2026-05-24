@@ -41,13 +41,13 @@ section_version() {
     echo "  Arch:       $(uname -m)"
 
     if [ -f /proc/version ]; then
-        echo "  Build:      $(cat /proc/version | sed 's/ (.*@.*)//')"
+        echo "  Build:      $(sed 's/ (.*@.*)//' /proc/version)"
     fi
 
     # Compiler info from /proc/version
     local compiler
-    compiler=$(cat /proc/version 2>/dev/null | grep -oP 'clang version [\d.]+' || \
-               cat /proc/version 2>/dev/null | grep -oP 'gcc version [\d.]+' || \
+    compiler=$(grep -oP 'clang version [\d.]+' /proc/version 2>/dev/null || \
+               grep -oP 'gcc version [\d.]+' /proc/version 2>/dev/null || \
                echo "unknown")
     echo "  Compiler:   ${compiler}"
 
@@ -161,7 +161,7 @@ section_performance() {
     # Context switches (since boot)
     echo -e "\n${GREEN}Scheduler:${NC}"
     if [ -f /proc/sched_features ]; then
-        echo "  Features: $(cat /proc/sched_features | cut -d' ' -f1-5) ..."
+        echo "  Features: $(cut -d' ' -f1-5 /proc/sched_features) ..."
     fi
     if [ -f /proc/schedstat ]; then
         local ctx_switches
@@ -324,7 +324,7 @@ section_compare() {
     for kernel_img in /boot/vmlinuz-*; do
         if [ -f "$kernel_img" ]; then
             local ksize
-            ksize=$(ls -lh "$kernel_img" | awk '{print $5}')
+            ksize=$(du -sh "$kernel_img" | cut -f1)
             echo "    $(basename "$kernel_img"): ${ksize}"
         fi
     done
