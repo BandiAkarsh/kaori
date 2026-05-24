@@ -91,7 +91,8 @@ find_snapper_snapshots() {
         # snapper list — extract number and description
         snapper -c "$config_name" list --columns number,description 2>/dev/null | \
             tail -n +2 | while read -r num desc; do
-            [ -n "$num" ] && [ "$num" -gt 0 ] 2>/dev/null || continue
+            [ -z "$num" ] && continue
+            [ "$num" -gt 0 ] 2>/dev/null || continue
             [ -z "$desc" ] && desc="snapshot-${num}"
             echo "snapper|${config_name}|${num}|${desc}"
         done
