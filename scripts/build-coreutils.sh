@@ -147,7 +147,6 @@ for util in "${UTILS[@]}"; do
     if [ -f "$src" ]; then
         # Copy and strip debug symbols
         cp "$src" "$dst"
-        local size
         size=$(du -sh "$dst" | cut -f1)
         if strip --strip-all "$dst" 2>/dev/null; then
             echo "  ✅ $name ($size)"
